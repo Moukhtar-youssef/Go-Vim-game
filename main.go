@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Moukhtar-youssef/Go-VIM-games.git/games/HJKL_Maze"
+	Games "github.com/Moukhtar-youssef/Go-VIM-games.git/games"
 	"github.com/Moukhtar-youssef/Go-VIM-games.git/utils"
-
 	"github.com/gdamore/tcell/v2"
 )
+
+type player struct {
+	Name  string
+	Score int
+}
 
 var GamesArray = []string{
 	"HJKL Maze", "Insert Invader", "Delete the Virus", "Exit",
@@ -31,7 +35,6 @@ func main() {
 	}()
 
 	selected := 0
-
 	screen.Clear()
 	for {
 		utils.DrawMenu(screen, selected, GamesArray)
@@ -67,12 +70,14 @@ func handleSelection(index int, s tcell.Screen) {
 	switch index {
 	case 0:
 		utils.PrintCentered(s, 40, 10, "Starting HJKL Maze", tcell.StyleDefault)
-		HJKL_Maze.HJKL_MAZE_GAME(s)
+		Games.DeleteTheTargetGame(s)
 	case 1:
-		fmt.Println("Starting Insert Invader...")
+		s.Clear()
+		utils.ShowTemporaryMessage(s, "Comming soon")
 
 	case 2:
-		fmt.Println("Starting Delete the Virus...")
+		s.Clear()
+		utils.ShowTemporaryMessage(s, "Comming soon")
 
 	default:
 		fmt.Println("Bye")
