@@ -173,7 +173,7 @@ func (g *Game) Run() {
 		if g.DeletedTargets >= g.targetGoal {
 			g.gameOver = true
 			g.screen.Clear()
-			utils.ShowTemporaryMessage(g.screen, "yay the easy level is done")
+			utils.ShowTemporaryMessage(g.screen, "yay the {}  level is done")
 		}
 		if len(g.targets) == 0 && !g.gameOver {
 			g.AddTarget()
