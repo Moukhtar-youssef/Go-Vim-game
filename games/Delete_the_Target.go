@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"slices"
 	"time"
 
 	"github.com/Moukhtar-youssef/Go-VIM-games.git/utils"
@@ -66,8 +67,8 @@ func NewGame(level int, s tcell.Screen) *Game {
 }
 func (g *Game) Draw() {
 	g.screen.Clear()
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
+	for y := range height {
+		for x := range width {
 			if x == 0 || x == width-1 || y == 0 || y == height-1 {
 				g.screen.SetContent(x, y, '#', nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 			}
@@ -83,7 +84,7 @@ func (g *Game) Draw() {
 
 func (g *Game) AddTarget() {
 	numtarget := g.level + 1
-	for i := 0; i < numtarget; i++ {
+	for range numtarget {
 		for {
 			x := rand.Intn(width-2) + 1
 			y := rand.Intn(height-2) + 1
@@ -110,7 +111,7 @@ func (g *Game) DeleteTarget() {
 	for i, target := range g.targets {
 		if target.x == g.playerX && target.y == g.playerY {
 			// Remove the target from the list and create a new one
-			g.targets = append(g.targets[:i], g.targets[i+1:]...)
+			g.targets = slices.Delete(g.targets, i, i+1)
 			g.DeletedTargets++
 			break
 		}
@@ -181,33 +182,36 @@ func (g *Game) Run() {
 	}
 }
 func DeleteTheTargetGame(s tcell.Screen) {
-	selected := 0
 	InitializingLevels()
-	for {
-		s.Clear()
-		utils.DrawMenu(s, selected, HJKLLevels)
-		s.Show()
-		switch ev := s.PollEvent().(type) {
-		case *tcell.EventKey:
-			switch ev.Key() {
-			case tcell.KeyUp:
-				if selected > 0 {
-					selected--
-				}
-			case tcell.KeyDown:
-				if selected < len(HJKLLevels)-1 {
-					selected++
-				}
-			case tcell.KeyEnter:
-				handleSelection(selected, s)
-				s.Show()
-			case tcell.KeyEscape:
-				return
-			default:
-				utils.ShowTemporaryMessage(s, "Please only use the keyboard keys advised")
-			}
-		}
+	items := []utils.MenuItems{
+		{
+			Name: "Easy",
+			Function: func() {
+				handleSelection(0, s)
+			},
+		},
+		{
+			Name: "Medium",
+			Function: func() {
+				handleSelection(1, s)
+			},
+		},
+		{
+			Name: "Hard",
+			Function: func() {
+				handleSelection(2, s)
+			},
+		},
+		{
+			Name: "Extreme",
+			Function: func() {
+				handleSelection(3, s)
+			},
+		},
 	}
+	Menu := utils.NewMenu("Choose level", items, s)
+	s.Clear()
+	Menu.HandleInput()
 }
 
 func handleSelection(index int, s tcell.Screen) {
